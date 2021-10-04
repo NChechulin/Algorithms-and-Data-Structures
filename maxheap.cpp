@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-template <typename T> class MinHeap {
+template <typename T> class MaxHeap {
 private:
   std::vector<T> _data;
   int _size;
@@ -84,7 +84,7 @@ private:
   }
 
 public:
-  MinHeap<T>(std::vector<T> data) {
+  MaxHeap<T>(std::vector<T> data) {
     _data = data;
     _size = data.size();
 
@@ -93,7 +93,7 @@ public:
 
   // sorts the given vector
   static void heapSort(std::vector<T> &data) {
-    MinHeap<T> heap = MinHeap<T>(data);
+    MaxHeap<T> heap = MaxHeap<T>(data);
 
     for (int i = 0; i < data.size(); ++i)
       data[i] = heap.pop();
@@ -108,7 +108,7 @@ public:
     bubbleUp(_size - 1);
   }
 
-  // returns the root (min element) and deletes it from the heap
+  // returns the root (max element) and deletes it from the heap
   T pop() {
     if (_size == 0)
       throw std::out_of_range("Cannot delete element out of empty heap");
@@ -135,13 +135,13 @@ public:
 
 int main() {
   std::vector<int> data = {3, 7, 12, 5, 3, 0, 96};
-  MinHeap<int> heap = MinHeap<int>(data);
+  MaxHeap<int> heap = MaxHeap<int>(data);
 
   for (int i = 0; i < data.size(); ++i)
     std::cout << heap.pop() << ' ';
 
   std::cout << "\nHEAPSORT:\n";
-  MinHeap<int>::heapSort(data);
+  MaxHeap<int>::heapSort(data);
 
   for (auto e : data)
     std::cout << e << ' ';
