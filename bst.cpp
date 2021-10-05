@@ -2,6 +2,7 @@
 #include "node.cpp"
 #include "vector"
 #include <algorithm>
+#include <queue>
 #include <stdexcept>
 #include <vector>
 
@@ -49,8 +50,84 @@ public:
     return it;
   }
 
+  // BFS
+  void levelOrder(void(f)(Node<T> *)) {
+    if (!_root)
+      return;
+
+    std::queue<Node<T> *> queue;
+    queue.push(_root);
+
+    while (!queue.empty()) {
+      Node<T> *node = queue.front();
+      queue.pop();
+
+      f(node);
+
+      if (node->hasLeftChild())
+        queue.push(node->left);
+      if (node->hasRightChild())
+        queue.push(node->right);
+    }
+  }
+
+  // DFS: left subtree, node itself, right subtree
+  void inOrder(Node<T> *current, void(f)(Node<T> *)) {
+    if (!current)
+      return;
+
+    if (current->hasLeftChild())
+      inOrder(current->left, f);
+
+    f(current);
+
+    if (current->hasRightChild())
+      inOrder(current->right, f);
+  }
+
+  // DFS: node itself, left subtree, right subtree
+  void preOrder(Node<T> *current, void(f)(Node<T> *)) {
+    if (!current)
+      return;
+
+    f(current);
+
+    if (current->hasLeftChild())
+      preOrder(current->left, f);
+
+    if (current->hasRightChild())
+      preOrder(current->right, f);
+  }
+
+  // DFS: left subtree, right subtree, node itself
+  void postOrder(Node<T> *current, void(f)(Node<T> *)) {
+    if (!current)
+      return;
+
+    if (current->hasLeftChild())
+      postOrder(current->left, f);
+
+    if (current->hasRightChild())
+      postOrder(current->right, f);
+
+    f(current);
+  }
+
   int getSize() const { return _size; }
+
+  Node<T> *getRoot() const { return _root; }
 };
+
+template <typename T> void myfunc(Node<T> *node) {
+  if (node)
+    std::cout << node->key << '\n';
+  else
+    std::cout << "reached leaf\n";
+}
+
+template <typename T> void f(Node<T> *node) {
+  std::cout << "NODE: " << node->key << '\n';
+}
 
 int main() {
   BST<int> tree = BST<int>();
@@ -70,4 +147,15 @@ int main() {
   }
 
   std::cout << tree.getSize() << '\n';
+
+  Node<int> *root = tree.getRoot();
+
+  std::cout << "Level order\n";
+  tree.levelOrder(&f);
+  std::cout << "In order\n";
+  tree.inOrder(root, &f);
+  std::cout << "PreOrder\n";
+  tree.preOrder(root, &f);
+  std::cout << "PostOrder\n";
+  tree.postOrder(root, &f);
 }
