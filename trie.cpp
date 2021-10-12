@@ -25,6 +25,7 @@ public:
       delete child;
   }
 
+  /// returns a pointer to a child with given key or nullptr
   Node *find(char c) {
     for (Node *current : children) {
       if (current->key == c)
@@ -33,9 +34,11 @@ public:
     return nullptr;
   }
 
+  /// sets a flag of the end of the word to true
   void setIsEnd() { _is_end = true; }
+  /// sets a flag of the end of the word to anything
   void setIsEnd(bool new_value) { _is_end = new_value; }
-
+  /// returns a flag of the end of the word
   bool getIsEnd() { return _is_end; }
 
   /// Returns pointer to found or created node
@@ -49,6 +52,7 @@ public:
     return new_node;
   }
 
+  /// Returns true if the node has no real children
   bool isLeaf() const {
     int ans = 0;
     for (Node *current : children) {
@@ -85,19 +89,11 @@ private:
       }
     }
 
-    Node *child = nullptr;
-    for (Node *current_child : current_node->children) {
-      if (current_child->key == key[depth]) {
-        child = current_child;
-        break;
-      }
-    }
-
+    Node *child = current_node->find(key[depth]);
     child = recursive_erase(key, child, depth + 1);
 
-    if (current_node->isLeaf() && !current_node->getIsEnd()) {
+    if (current_node->isLeaf() && !current_node->getIsEnd())
       current_node = nullptr;
-    }
 
     return current_node;
   }
@@ -105,6 +101,7 @@ private:
 public:
   Trie() : _root(new Node()) {}
 
+  /// constructs a trie from vector of keys
   Trie(std::vector<std::string> &keys) {
     _root = new Node();
 
@@ -114,6 +111,7 @@ public:
 
   ~Trie() { delete _root; }
 
+  /// inserts a new key into the trie
   void insert(std::string &key) {
     Node *current = _root;
 
@@ -122,6 +120,7 @@ public:
     current->setIsEnd();
   }
 
+  /// returns true if the item is present in the tree
   bool search(std::string &key) const {
     Node *current = _root;
 
@@ -135,6 +134,7 @@ public:
     return current->getIsEnd();
   }
 
+  /// prints all of the words with a given prefix
   void retrieve(std::string &prefix) {
     Node *last_prefix_char = _root;
 
@@ -148,6 +148,7 @@ public:
     recursive_retrieve(prefix, last_prefix_char);
   }
 
+  /// erases a node with a given key
   void erase(std::string &key) { _root = recursive_erase(key, _root, 0); }
 };
 
