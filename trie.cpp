@@ -33,9 +33,10 @@ public:
     return nullptr;
   }
 
-  void setEnd() { _is_end = true; }
+  void setIsEnd() { _is_end = true; }
+  void setIsEnd(bool new_value) { _is_end = new_value; }
 
-  bool getEnd() { return _is_end; }
+  bool getIsEnd() { return _is_end; }
 
   /// Returns pointer to found or created node
   Node *insert(char c) {
@@ -48,19 +49,57 @@ public:
     return new_node;
   }
 
-  bool isLeaf() const { return children.size() == 0; }
+  bool isLeaf() const {
+    int ans = 0;
+    for (Node *current : children) {
+      if (current)
+        ans += 1;
+    }
+
+    return ans == 0;
+  }
 };
 
 class Trie {
 private:
   Node *_root;
 
-  void retrieve(std::string current_prefix, Node *current_node) {
-    if (current_node->getEnd())
+  void recursive_retrieve(std::string current_prefix, Node *current_node) {
+    if (current_node->getIsEnd())
       std::cout << current_prefix << '\n';
 
     for (Node *child : current_node->children)
-      retrieve(current_prefix + child->key, child);
+      recursive_retrieve(current_prefix + child->key, child);
+  }
+
+  Node *recursive_erase(std::string &key, Node *current_node, int depth) {
+    if (current_node == nullptr)
+      return nullptr;
+
+    if (depth == key.length()) {
+      current_node->setIsEnd(false);
+      if (current_node->isLeaf()) {
+        Node *tmp = current_node;
+        delete current_node;
+        return tmp;
+      }
+    }
+
+    Node *child = nullptr;
+    for (Node *current_child : current_node->children) {
+      if (current_child->key == key[depth]) {
+        child = current_child;
+        break;
+      }
+    }
+
+    child = recursive_erase(key, child, depth + 1);
+
+    if (current_node->isLeaf() && !current_node->getIsEnd()) {
+      current_node = nullptr;
+    }
+
+    return current_node;
   }
 
 public:
@@ -80,7 +119,7 @@ public:
 
     for (int i = 0; i < key.size(); ++i)
       current = current->insert(key[i]);
-    current->setEnd();
+    current->setIsEnd();
   }
 
   bool search(std::string &key) const {
@@ -93,10 +132,10 @@ public:
         return false;
     }
 
-    return current->getEnd();
+    return current->getIsEnd();
   }
 
-  void retrieve(std::string prefix) {
+  void retrieve(std::string &prefix) {
     Node *last_prefix_char = _root;
 
     for (int i = 0; i < prefix.size(); ++i) {
@@ -106,8 +145,10 @@ public:
     }
 
     // at this point we have a pointer to the last char of prefix
-    retrieve(prefix, last_prefix_char);
+    recursive_retrieve(prefix, last_prefix_char);
   }
+
+  void erase(std::string &key) { recursive_erase(key, _root, 0); }
 };
 
 bool itemInVector(std::string &item, std::vector<std::string> &items) {
@@ -129,7 +170,8 @@ int main() {
 
   std::cout << "PASSED ALL TESTS\n";
 
-  trie->retrieve("an");
+  trie->erase(items_to_search_for[0]);
+  assert(trie->search(items_to_search_for[0]) == 0);
 
   delete trie;
 
