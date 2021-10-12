@@ -148,7 +148,7 @@ public:
     recursive_retrieve(prefix, last_prefix_char);
   }
 
-  void erase(std::string &key) { recursive_erase(key, _root, 0); }
+  void erase(std::string &key) { _root = recursive_erase(key, _root, 0); }
 };
 
 bool itemInVector(std::string &item, std::vector<std::string> &items) {
