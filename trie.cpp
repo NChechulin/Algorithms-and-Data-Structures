@@ -156,25 +156,25 @@ bool itemInVector(std::string &item, std::vector<std::string> &items) {
   return std::find(items.begin(), items.end(), item) != items.end();
 }
 
-int main() {
-  std::vector<std::string> data = {"any",      "ant",   "anna",  "anger",
-                                   "angelina", "angie", "angry", "angel"};
+// int main() {
+//   std::vector<std::string> data = {"any",      "ant",   "anna",  "anger",
+//                                    "angelina", "angie", "angry", "angel"};
 
-  Trie *trie = new Trie(data);
+//   Trie *trie = new Trie(data);
 
-  std::vector<std::string> items_to_search_for = {
-      "antalya", "angelina", "anna",   "angel", "betty",
-      "alabama", "abobus",   "amogus", "an"};
+//   std::vector<std::string> items_to_search_for = {
+//       "antalya", "angelina", "anna",   "angel", "betty",
+//       "alabama", "abobus",   "amogus", "an"};
 
-  for (std::string &key : items_to_search_for)
-    assert(trie->search(key) == itemInVector(key, data));
+//   for (std::string &key : items_to_search_for)
+//     assert(trie->search(key) == itemInVector(key, data));
 
-  std::cout << "PASSED ALL TESTS\n";
+//   std::cout << "PASSED ALL TESTS\n";
 
-  trie->erase(items_to_search_for[0]);
-  assert(trie->search(items_to_search_for[0]) == 0);
+//   trie->erase(items_to_search_for[0]);
+//   assert(trie->search(items_to_search_for[0]) == 0);
 
-  delete trie;
+//   delete trie;
 
-  std::cout << "DELETED THE TRIE SUCCESFULLY\n";
-}
+//   std::cout << "DELETED THE TRIE SUCCESFULLY\n";
+// }

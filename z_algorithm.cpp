@@ -79,20 +79,20 @@ private:
   }
 };
 
-int main() {
-  std::string text = "If a dog chews shoes, whose shoes does he choose?";
-  std::string pattern = "oes";
+// int main() {
+//   std::string text = "If a dog chews shoes, whose shoes does he choose?";
+//   std::string pattern = "oes";
 
-  ZFinder zFinder(text, pattern);
+//   ZFinder zFinder(text, pattern);
 
-  std::cout << "Number of ocurrences: " << zFinder.freq() << std::endl;
+//   std::cout << "Number of ocurrences: " << zFinder.freq() << std::endl;
 
-  int pos = zFinder.find();
+//   int pos = zFinder.find();
 
-  while (pos != -1) {
-    std::cout << pos << std::endl;
-    pos = zFinder.find();
-  }
+//   while (pos != -1) {
+//     std::cout << pos << std::endl;
+//     pos = zFinder.find();
+//   }
 
-  return 0;
-}
+//   return 0;
+// }

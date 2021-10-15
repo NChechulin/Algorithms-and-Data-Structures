@@ -129,33 +129,33 @@ template <typename T> void f(Node<T> *node) {
   std::cout << "NODE: " << node->key << '\n';
 }
 
-int main() {
-  BST<int> tree = BST<int>();
+// int main() {
+//   BST<int> tree = BST<int>();
 
-  std::vector<int> data = {8, 3, 10, 1, 6, 14, 4, 7, 13};
+//   std::vector<int> data = {8, 3, 10, 1, 6, 14, 4, 7, 13};
 
-  for (int e : data)
-    tree.insert(e);
+//   for (int e : data)
+//     tree.insert(e);
 
-  for (int e : data)
-    tree.find(e);
+//   for (int e : data)
+//     tree.find(e);
 
-  try {
-    tree.find(-1);
-  } catch (std::out_of_range) {
-    std::cout << "\n-1 is not present in the tree\n";
-  }
+//   try {
+//     tree.find(-1);
+//   } catch (std::out_of_range) {
+//     std::cout << "\n-1 is not present in the tree\n";
+//   }
 
-  std::cout << tree.getSize() << '\n';
+//   std::cout << tree.getSize() << '\n';
 
-  Node<int> *root = tree.getRoot();
+//   Node<int> *root = tree.getRoot();
 
-  std::cout << "Level order\n";
-  tree.levelOrder(&f);
-  std::cout << "In order\n";
-  tree.inOrder(root, &f);
-  std::cout << "PreOrder\n";
-  tree.preOrder(root, &f);
-  std::cout << "PostOrder\n";
-  tree.postOrder(root, &f);
-}
+//   std::cout << "Level order\n";
+//   tree.levelOrder(&f);
+//   std::cout << "In order\n";
+//   tree.inOrder(root, &f);
+//   std::cout << "PreOrder\n";
+//   tree.preOrder(root, &f);
+//   std::cout << "PostOrder\n";
+//   tree.postOrder(root, &f);
+// }

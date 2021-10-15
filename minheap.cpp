@@ -130,18 +130,18 @@ public:
   int size() const { return _size; }
 };
 
-int main() {
-  std::vector<int> data = {3, 7, 12, 5, 3, 0, 96};
-  MinHeap<int> heap = MinHeap<int>(data);
+// int main() {
+//   std::vector<int> data = {3, 7, 12, 5, 3, 0, 96};
+//   MinHeap<int> heap = MinHeap<int>(data);
 
-  for (int i = 0; i < data.size(); ++i)
-    std::cout << heap.pop() << ' ';
+//   for (int i = 0; i < data.size(); ++i)
+//     std::cout << heap.pop() << ' ';
 
-  std::cout << "\nHEAPSORT:\n";
-  MinHeap<int>::heapSort(data);
+//   std::cout << "\nHEAPSORT:\n";
+//   MinHeap<int>::heapSort(data);
 
-  for (auto e : data)
-    std::cout << e << ' ';
+//   for (auto e : data)
+//     std::cout << e << ' ';
 
-  return 0;
-}
+//   return 0;
+// }

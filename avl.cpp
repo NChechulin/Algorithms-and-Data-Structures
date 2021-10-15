@@ -186,18 +186,18 @@ private:
   }
 };
 
-int main() {
-  vector<int> a = {1, 2, 3, 4, 5};
-  AVLTree myTree;
+// int main() {
+//   vector<int> a = {1, 2, 3, 4, 5};
+//   AVLTree myTree;
 
-  for (auto el : a)
-    myTree.insert(el);
+//   for (auto el : a)
+//     myTree.insert(el);
 
-  myTree.print();
-  std::cout << '\n';
+//   myTree.print();
+//   std::cout << '\n';
 
-  myTree.erase(4);
+//   myTree.erase(4);
 
-  myTree.print();
-  std::cout << '\n';
-}
+//   myTree.print();
+//   std::cout << '\n';
+// }
