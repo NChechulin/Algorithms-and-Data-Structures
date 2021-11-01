@@ -65,7 +65,7 @@ public:
 };
 
 class Trie {
-private:
+protected:
   Node *_root;
 
   void recursive_retrieve(std::string current_prefix, Node *current_node) {
