@@ -34,6 +34,16 @@ public:
     return nullptr;
   }
 
+  /// returns true if `x` is a direct child of current node
+  bool isParentOf(Node *x) {
+    for (Node *child) {
+      if (child == x)
+        return true;
+    }
+
+    return false;
+  }
+
   /// sets a flag of the end of the word to true
   void setIsEnd() { _is_end = true; }
   /// sets a flag of the end of the word to anything
