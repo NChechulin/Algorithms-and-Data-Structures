@@ -36,7 +36,7 @@ public:
 
   /// returns true if `x` is a direct child of current node
   bool isParentOf(Node *x) {
-    for (Node *child) {
+    for (Node *child : children) {
       if (child == x)
         return true;
     }
