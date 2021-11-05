@@ -44,6 +44,9 @@ public:
     return false;
   }
 
+  /// returns true if one of the children has key `c`
+  bool isParentOf(char c) { return find(c) != nullptr; }
+
   /// sets a flag of the end of the word to true
   void setIsEnd() { _is_end = true; }
   /// sets a flag of the end of the word to anything
