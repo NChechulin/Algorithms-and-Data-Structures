@@ -1,176 +1,192 @@
-#include "trie.cpp"
-#include <cstdint>
+
+#ifndef AHOCORASICK_H
+#define AHOCORASICK_H
+
+#include "tries.h"
 #include <map>
 #include <queue>
-#include <string>
-#include <vector>
+#include <iostream>
+#include <valarray>
 
-class AhoCorasickTrie : public Trie {
-private:
-  std::map<Node *, Node *> _suffixLink;
-  std::map<Node *, Node *> _outputLink;
-  std::map<Node *, std::string> _patterns;
-
-  void buildSuffixLinks() {
-    _suffixLink[_root] = nullptr;
-
-    for (Node *child : _root->children)
-      _suffixLink[child] = _root;
-
-    // level order (BFS)
-    std::queue<Node *> queue;
-    queue.push(_root);
-
-    while (!queue.empty()) {
-      Node *w = queue.front();
-      queue.pop();
-
-      for (Node *child : w->children)
-        queue.push(child);
-
-      if (w == _root)
-        continue;
-
-      for (Node *a : w->children) {
-        if (!a)
-          continue;
-
-        Node *x = _suffixLink[w];
-
-        while (x && !x->isParentOf(a->key))
-          x = _suffixLink[x];
-
-        if (x)
-          _suffixLink[a] = x->find(a->key);
-        else
-          _suffixLink[a] = _root;
-      }
-    }
-  }
-
-  void buildOutputLink(Node *u) {
-    Node *v = _suffixLink[u];
-
-    if (v && v->getIsEnd())
-      _outputLink[u] = v;
-    else if (_outputLink[v])
-      _outputLink[u] = _outputLink[v];
-  }
-
-  void buildOutputLinks() {
-    std::queue<Node *> queue;
-    queue.push(_root);
-
-    while (!queue.empty()) {
-      Node *current = queue.front();
-      queue.pop();
-
-      if (!current)
-        continue;
-
-      for (Node *child : current->children)
-        queue.push(child);
-
-      buildOutputLink(current);
-    }
-  }
-
-  void printSuffixLinks() {
-    std::queue<Node *> q;
-    q.push(_root);
-    int row_index = 1;
-
-    while (!q.empty()) {
-      Node *current = q.front();
-      q.pop();
-
-      if (!current)
-        continue;
-
-      for (Node *child : current->children)
-        if (child)
-          q.push(child);
-
-      if (current == _root)
-        continue;
-
-      Node *suff_link = _suffixLink[current];
-
-      std::cout << row_index << ": " << current->key << '(' << current << ')'
-                << " -> ";
-
-      if (!suff_link)
-        std::cout << "nullptr\n";
-      else if (suff_link == _root)
-        std::cout << "root\n";
-      else
-        std::cout << suff_link->key << '(' << suff_link << ')' << '\n';
-
-      row_index++;
-    }
-  }
-
+class AhoCorasickTrie : public Trie
+{
 public:
-  AhoCorasickTrie(std::vector<std::string> &patterns) {
-    for (auto pat : patterns)
-      _patterns[insert(pat)] = pat;
 
-    buildSuffixLinks();
-    buildOutputLinks();
-    printSuffixLinks();
-  }
+    AhoCorasickTrie(const std::vector<std::string> &patterns)
+    {
+        std::vector<std::string> realPatterns = patterns;
 
-  typedef std::pair<std::uint32_t, std::string> occurrence;
-  typedef std::vector<occurrence> find_result;
+        for (auto &pattern: patterns)
+        {
+            int qmAt = pattern.rfind("?");
+            if (qmAt >= 0)
+            {
+                for (int to = 0; to !=qmAt; to++){
+                    std::string newPattern = pattern.substr(0, to) + '?';
+                    realPatterns.push_back(newPattern);
+            }}
+        }
 
-  find_result find(std::string text) {
-    find_result ans;
 
-    Node *current_node = _root;
+        for (auto &pattern: patterns)
+        {
+            Node *endNode = this->insert(pattern);
+            this->patterns[endNode] = pattern;
+        }
 
-    for (int i = 0; i < text.size(); ++i) {
-      char a = text[i];
-
-      while (!current_node->isParentOf(a) && current_node != _root)
-        current_node = _suffixLink[current_node];
-
-      if (!current_node->isParentOf(a) && current_node == _root)
-        continue;
-
-      // The currentNode will be now the child with letter a of the currentNode
-
-      if (current_node && current_node->getIsEnd()) {
-        std::string pattern = _patterns[current_node];
-        ans.push_back({i - pattern.size(), pattern});
-      }
-
-      Node *v = _outputLink[current_node];
-
-      while (v)
-        v = _outputLink[v];
-
-      if (v && v->getIsEnd()) {
-        std::string pattern = _patterns[v];
-        ans.push_back({i - pattern.size(), pattern});
-      }
+        buildSuffixLinks();
+        printSuffixLinks();
     }
 
-    return ans;
-  }
+    void find(const std::string &text)
+    {
+        Node *currentNode = _root;
+        for (int i = 0; i < text.size(); i++)
+        {
+            char a = text[i];
+
+            while ((!aOfX(currentNode, a)) and currentNode != _root)
+                currentNode = suffixLink[currentNode];
+
+            if ((!aOfX(currentNode, a)) and currentNode == _root)
+                continue;
+
+            currentNode = aOfX(currentNode, a);
+            if (currentNode->endOfWord)
+                // We have found a pattern in position ??? of the text! Print position and pattern
+            {
+                int foundAt = i + 1 - this->patterns[currentNode].size();
+                int pattLen = this->patterns[currentNode].size();
+
+                std::cout << "match object " << text.substr(foundAt, pattLen)
+                          << "\vfound at position " << foundAt << '\n';
+            }
+            Node *v = outputLink[currentNode] ? outputLink[currentNode] : nullptr;
+            while (v)
+                // We have a found a pattern in position ??? of the text! Print position and pattern
+            {
+                int foundAt = i + 1 - this->patterns[v].size();
+                int pattLen = this->patterns[v].size();
+
+                std::cout << "match object " << text.substr(foundAt, pattLen)
+                          << " found at position " << foundAt << '\n';
+                v = outputLink[v] ? outputLink[v] : nullptr;
+            }
+        }
+
+    }
+
+    void printSuffixLinks()
+    {
+
+        std::queue<Node *> q;
+        q.push(_root);
+
+        while (!q.empty())
+        {
+            Node *current = q.front();
+            q.pop();
+
+            for (Node *child: current->children)
+                if (child)
+                    q.push(child);
+
+            if (current == _root)
+                continue;
+
+            Node *suff_link = suffixLink[current];
+            if (suff_link)
+            {
+                if (suff_link == _root)
+                    std::cout << current->c << " -> "
+                              << "root" << '\n';
+                else
+                    std::cout << current->c << " -> " << suff_link->c << '\n';
+
+            } else
+            {
+                std::cout << current->c << " -> "
+                          << "nullptr" << '\n';
+            }
+        }
+    }
+
+private:
+
+    void buildOutputLink(Node *u)
+    {
+        Node *v = suffixLink[u];
+        if (v and v->endOfWord)
+            outputLink[u] = v;
+        else if (outputLink[v])
+            outputLink[u] = outputLink[v];
+    }
+
+    Node *aOfX(Node *x, char a)
+    {
+
+        if (!x)
+            return nullptr;
+        for (Node *child: x->children)
+            if (child)
+                if ((child->c == a) or (child->c == '?'))
+//                if (child->c == a)
+                    return child;
+        return nullptr;
+    }
+
+    void buildSuffixLinks()
+    {
+        // Your code here! ;-) (Follow slide 67)
+        std::queue<Node *> queue;
+
+        auto root = this->_root;
+        suffixLink[root] = nullptr;
+
+        /*** go through root's children ***/
+        for (auto crrChild: root->children)
+            if (crrChild)
+            {
+                suffixLink[crrChild] = root;
+                queue.push(crrChild);
+            }
+
+        /*** go through the queue. the queue doesn't contain nullptr ***/
+        while (!queue.empty())
+        {
+            Node *w = queue.front();
+//            std::cout << w->c;
+            for (Node *a: w->children)
+                if (a)
+                {
+                    /*** Create suffix link for node wa ***/
+                    Node *x = suffixLink[w];
+                    while ((x) and (!aOfX(x, a->c)))
+                        x = suffixLink[x];
+
+                    if (!x)
+                        suffixLink[a] = root;
+                    else
+                        suffixLink[a] = aOfX(x, a->c);
+
+                    buildOutputLink(a);
+
+                    queue.push(a);
+                }
+            queue.pop();
+        }
+
+
+
+        // P.S: print also suffix links in the console when you assign then! (Like in the example of slide 89)
+    }
+
+    std::map<Node *, std::string> patterns;
+    std::vector<std::string> realPatterns;
+
+    std::map<Node *, Node *> suffixLink;
+
+    std::map<Node *, Node *> outputLink;
 };
 
-int main() {
-  std::vector<std::string> patterns = {"i", "in", "tin", "sting"};
-
-  AhoCorasickTrie myTrie(patterns);
-
-  auto ans = myTrie.find("sting");
-
-  std::cout << "FIND RESULTS\n";
-
-  for (auto pair : ans) {
-    std::cout << pair.first << ": " << pair.second << '\n';
-  }
-
-  return 0;
-}
+#endif
